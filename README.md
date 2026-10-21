@@ -26,18 +26,17 @@ python -m zipfile -e /tmp/churn.zip .
 Do not overwrite existing local data when extracting. Network access needs
 `www.kaggle.com` and `storage.googleapis.com`. The download worked without
 credentials during setup. Follow the provider's terms and never commit customer
-CSVs or credentials. The notebook accepts Kaggle's `Churn_Modelling.csv` spelling
-or the original notebook's `Churn_Modeling.csv` spelling.
+CSVs or credentials. The notebook accepts either `Churn_Modelling.csv` or `Churn_Modeling.csv`.
 
-The original cleaned data can be recreated for compatibility:
+An optional cleaned CSV can be generated with:
 
 ```bash
 python prepare_data.py Churn_Modelling.csv
 ```
 
 This preserves equivalent existing output and refuses to overwrite differing
-output. Revised models use raw data with preprocessing inside training folds;
-they do not consume the globally encoded compatibility file.
+output. Model pipelines read raw data and fit preprocessing inside training folds.
+The cleaned CSV is an optional data export.
 
 ## Run
 
@@ -47,7 +46,6 @@ jupyter lab
 ```
 
 Open **[Customer_Churn_Analysis.ipynb](Customer_Churn_Analysis.ipynb)** and run all cells.
-It replaces the three model-specific notebooks (originals remain in Git history).
 The analysis uses `churn_workflow.py`, a deterministic,
 stratified 70/30 split, and five-fold training-only cross-validation. To execute
 the consolidated notebook without replacing its saved outputs:
@@ -76,16 +74,13 @@ Recall measures how many churners are found; precision measures how many flagged
 customers churn. Neither means overall accuracy. Compare the precision-recall
 curve with churn prevalence, not accuracy alone.
 
-The historical notebooks repeatedly consulted test rows during tuning. This
-revision prevents that in code, but reusing the dataset does not create a fresh
-external validation cohort. Treat these results as exploratory. Before deployment,
+Results are exploratory and require validation on an independent cohort. Before deployment,
 define intervention cost and benefit, choose a threshold using training-only
 out-of-fold predictions or a separate validation set, and assess the final policy
 on fresh data. Prefer a forward-in-time split if customer timestamps become
 available. Predicting churn does not establish that an intervention prevents it.
 
-The old VIF/Box–Tidwell feature-removal analysis and 100-fold weight search were
-replaced by a regularized baseline retaining the available predictors. Compare
+The regularized logistic baseline retains the available predictors. Compare
 splines through training-only CV if richer logistic relationships are needed.
 The small parameter grids are starting points. The three final test results are
 descriptive comparisons; choosing a production winner after inspecting them
@@ -101,7 +96,7 @@ without using the final test rows:
 python threshold_analysis.py
 ```
 
-This takes the original **7,000 training rows only** and performs three outer
+This uses the **7,000 training rows only** and performs three outer
 stratified folds. Within each outer training fold, a fresh five-fold search selects
 parameters and fits preprocessing. Each customer's score therefore comes from a
 model whose preprocessing and tuning excluded that customer. This is more costly
@@ -131,8 +126,8 @@ recheck the chosen policy with the final fitted model on fresh data. A fixed
 score cutoff can drift with the population, while ranking enforces capacity.
 
 Choosing a budget after inspecting these curves is policy development, not an
-independent estimate of the chosen policy's future performance. The original test
-set remains untouched by this analysis. Before deployment, specify outreach
+independent estimate of the chosen policy's future performance. The held-out test
+set is excluded from this analysis. Before deployment, specify outreach
 capacity and evaluate the frozen policy on an independent cohort. To estimate
 financial value, also measure outreach cost and the causal retention benefit.
 

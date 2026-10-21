@@ -1,4 +1,4 @@
-"""Shared, leakage-safe training and evaluation for the churn notebooks."""
+"""Shared training pipelines and evaluation for the customer churn analysis."""
 
 from pathlib import Path
 
@@ -27,7 +27,7 @@ CATEGORICAL = ["Geography", "Gender"]
 
 
 def load_data(path="Churn_Modeling.csv"):
-    """Accept the notebook spelling or Kaggle's original filename."""
+    """Load raw customer data using either supported CSV filename."""
     path = Path(path)
     if not path.exists() and path.name == "Churn_Modeling.csv":
         path = path.with_name("Churn_Modelling.csv")

@@ -1,4 +1,4 @@
-"""Reproduce the original cleaned CSV; model pipelines use raw data instead."""
+"""Export a cleaned, numerically encoded CSV from the raw customer data."""
 
 import argparse
 from pathlib import Path

@@ -1,0 +1,7 @@
+# Customer data stays local.
+*.csv
+*.zip
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+artifacts/
